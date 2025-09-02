@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Would You Rather – Classroom</title>
+<style>
+  :root{
+    --bg:#f6f7fb;        /* light background */
+    --panel:#ffffff;     /* card/panel */
+    --text:#0f172a;      /* slate-900 */
+    --muted:#475569;     /* slate-600 */
+    --border:rgba(2,6,23,.12);
+    --shadow:0 6px 16px rgba(15,23,42,.08);
+    --leftStart:#fecdd3; --leftEnd:#fda4af;     /* left gradient */
+    --rightStart:#bae6fd; --rightEnd:#7dd3fc;   /* right gradient */
+    --accent:#0ea5e9;
+    --chip:#f1f5f9;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%; margin:0}
+  body{
+    font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background:var(--bg); color:var(--text);
+    display:flex; flex-direction:column; gap:8px; padding:10px;
+    overflow:hidden; /* no page scroll */
+  }
+  header{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+  .title{font-weight:800; font-size:18px}
+  .sub{color:var(--muted); font-size:12px}
+  .controls{display:flex; gap:6px; flex-wrap:wrap; margin-left:auto}
+  button{
+    background:#fff; border:1px solid var(--border); color:var(--text);
+    padding:7px 10px; border-radius:10px; cursor:pointer; font-weight:650; font-size:13px; box-shadow:var(--shadow)
+  }
+  button:hover{transform:translateY(-1px)}
+  .btn-primary{background:linear-gradient(180deg, #e0f2fe, #fff); border-color:#bae6fd}
+  .btn-alt{background:linear-gradient(180deg, #ffe4e6, #fff); border-color:#fecdd3}
+  input[type="number"], select{
+    padding:6px 8px; border-radius:8px; border:1px solid var(--border); background:#fff; font-size:13px
+  }
+  .layout{
+    display:grid; grid-template-columns:1fr 320px; gap:10px;
+    height: calc(100vh - 120px); min-height:340px;
+  }
+  .stage{
+    border:1px solid var(--border); border-radius:16px; padding:10px; background:var(--panel);
+    box-shadow:var(--shadow); display:grid; grid-template-rows:auto 1fr auto auto auto; gap:8px; min-width:0; min-height:0;
+  }
+  .option-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; min-height:0}
+  .option{
+    border:1px solid var(--border); border-radius:14px; padding:10px;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; gap:6px;
+    height:100%; position:relative; overflow:hidden;
+  }
+  .left{background:linear-gradient(145deg, var(--leftStart), var(--leftEnd))}
+  .right{background:linear-gradient(215deg, var(--rightStart), var(--rightEnd))}
+  .option h2{font-size:12px; margin:0; opacity:.75}
+  .option p{font-size: clamp(18px, 2.6vw, 28px); margin:0; font-weight:800; line-height:1.2}
+  .option.active{outline:3px solid var(--accent); box-shadow:0 0 0 3px rgba(14,165,233,.18) inset}
+  .ticker{display:flex; align-items:center; gap:8px; justify-content:center; color:var(--muted); font-size:12px; flex-wrap:wrap}
+  .chip{background:var(--chip); padding:4px 8px; border-radius:999px; border:1px solid var(--border)}
+  .count{font-variant-numeric:tabular-nums; font-size:22px; font-weight:900; color:var(--text); cursor:pointer}
+  #startersRow{display:flex; gap:6px; flex-wrap:wrap; justify-content:center}
+  .debatebar{display:flex; justify-content:space-around; gap:8px; font-size:13px; flex-wrap:wrap}
+  .sidebar{
+    border:1px solid var(--border); border-radius:16px; padding:10px; background:var(--panel); box-shadow:var(--shadow);
+    display:flex; flex-direction:column; gap:8px; min-width:280px; min-height:0; overflow:hidden;
+  }
+  .sidebar h3{margin:2px 0 0; font-size:13px; color:var(--muted)}
+  .list{display:flex; flex-direction:column; gap:6px; height: 34vh; overflow:auto; padding-right:2px; font-size:12px}
+  .list-item{display:flex; gap:6px; align-items:flex-start; border:1px solid var(--border); border-radius:10px; padding:6px; background:#fafafa; cursor:pointer}
+  .row{display:flex; gap:6px; align-items:center}
+  .row>*{flex:1}
+  .footer{font-size:12px; color:var(--muted); text-align:center}
+  .hidden{display:none}
+  @media (max-width: 900px){
+    .layout{grid-template-columns:1fr 280px}
+    .option p{font-size: clamp(18px, 3.4vw, 26px)}
+  }
+  @media (max-width: 720px){
+    .layout{grid-template-columns:1fr}
+    .sidebar{height:42vh}
+    .list{height: 22vh}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="title">Would You Rather – Classroom Edition</div>
+      <div class="sub">Shortcuts: <b>Space</b> Next • <b>T</b> Start/Stop Timer • <b>S</b> Starters • <b>D</b> Toggle Debate • <b>F</b> Fullscreen • Click time to set mm:ss</div>
+    </div>
+    <div class="controls">
+      <button id="nextBtn" class="btn-primary">Next ▷</button>
+      <button id="timerBtn">Start Timer ⏱</button>
+      <input type="number" id="timerQuick" value="90" min="10" step="10" title="seconds" style="width:76px">s
+      <button id="startersBtn" class="btn-alt">Starters ✍️</button>
+      <button id="debateToggle" class="btn-alt">Debate Mode ⚖️</button>
+      <button id="fullscreenBtn">Fullscreen ⤢</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage" aria-live="polite">
+      <div class="option-grid">
+        <div class="option left" id="optLeft">
+          <h2>Option A</h2>
+          <p id="textLeft">—</p>
+        </div>
+        <div class="option right" id="optRight">
+          <h2>Option B</h2>
+          <p id="textRight">—</p>
+        </div>
+      </div>
+
+      <div class="ticker">
+        <span class="chip">Prompt <span id="idx">1</span>/<span id="total">—</span></span>
+        <span class="chip">Level: <b id="levelChip">—</b></span>
+      </div>
+
+      <div class="ticker">
+        <span class="count" id="countdown">—:—</span>
+      </div>
+
+      <div id="startersRow" class="hidden">
+        <!-- sentence starters appear here -->
+      </div>
+
+      <div class="debatebar hidden" id="debatePanel">
+        <span class="chip">Phase: <b id="phase">Idle</b></span>
+        <span class="chip">A Time: <b id="timeA">—</b></span>
+        <span class="chip">B Time: <b id="timeB">—</b></span>
+        <span class="chip" id="voteChip">A: 0 • B: 0 (— / —)</span>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <h3>Prompt Bank</h3>
+      <div class="list" id="promptList" aria-label="Prompt list"></div>
+
+      <h3>Level</h3>
+      <div class="row">
+        <select id="levelSelect">
+          <option>B1–B2</option>
+          <option>A2</option>
+          <option>C1</option>
+        </select>
+      </div>
+
+      <h3>Timer (advanced)</h3>
+      <div class="row">
+        <input id="timerMin" type="number" min="0" step="0.5" value="1.5" title="Minutes" />
+        <button id="setTimerBtn">Set</button>
+        <button id="startTimerBtn">Start</button>
+        <button id="stopTimerBtn">Stop</button>
+      </div>
+      <div class="row"><small>Tip: Click the big time above to set (mm:ss or seconds)</small></div>
+
+      <h3>Debate Mode</h3>
+      <div class="row">
+        <input id="speakSec" type="number" min="10" step="5" value="45" title="Seconds per side" />
+        <input id="rebutSec" type="number" min="10" step="5" value="20" title="Rebuttal seconds" />
+      </div>
+      <div class="row">
+        <label style="display:flex;align-items:center;gap:6px"><input id="useRebut" type="checkbox" checked /> Rebuttal round</label>
+      </div>
+      <div class="row">
+        <button id="debateStart">Start</button>
+        <button id="debatePause">Pause</button>
+        <button id="debateNext">Next</button>
+        <button id="debateReset">Reset</button>
+      </div>
+
+      <details>
+        <summary><b>How Debate Mode works</b></summary>
+        <ol style="margin:6px 0 0 16px; padding:0; font-size:12px; color:#334155">
+          <li><b>Toggle</b> Debate (button or <b>D</b>) to show the debate bar.</li>
+          <li><b>Set times:</b> choose seconds per side and (optional) rebuttal seconds; uncheck Rebuttal to skip.</li>
+          <li><b>Start:</b> Side A speaks, left panel highlights, big timer counts down. Then B speaks. Click <b>Next</b> to switch early.</li>
+          <li><b>Rebuttals:</b> If enabled, A then B rebut. The bar shows A/B remaining time.</li>
+          <li><b>Vote:</b> Use Vote A/B to tally hands; percentages update live.</li>
+          <li><b>Pause/Reset:</b> Pause stops timing; Reset clears phase and timers.</li>
+        </ol>
+      </details>
+
+      <h3>Vote</h3>
+      <div class="row">
+        <button id="voteA">Vote A</button>
+        <button id="voteB">Vote B</button>
+        <button id="voteReset">Reset</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="footer">✨✍️ Created by Panagiotis Domvros, English and Drama Teacher, Sourced from Education World ✍️✨</div>
+
+<script>
+  // ===== Prompt bank with levels (36) =====
+  const prompts = [
+    {a:"Live in a world with no technology", b:"Live in a world with no nature", level:"B1–B2"},
+    {a:"Speak with animals", b:"Speak all human languages fluently", level:"B1–B2"},
+    {a:"Have your favourite movie character as your best friend", b:"Have your favourite book character as your sibling", level:"B1–B2"},
+    {a:"Never use social media again", b:"Never watch TV or movies again", level:"B1–B2"},
+    {a:"Always be 10 minutes late", b:"Always be 20 minutes early", level:"A2"},
+    {a:"Travel only by train", b:"Travel only by boat", level:"A2"},
+    {a:"Eat only sweet food for a week", b:"Eat only salty food for a week", level:"A2"},
+    {a:"Fly for 10 minutes a day", b:"Be invisible for 10 minutes a day", level:"B1–B2"},
+    {a:"Live in the city center", b:"Live in the countryside", level:"A2"},
+    {a:"Always speak in rhymes", b:"Always sing instead of speak", level:"A2"},
+    {a:"Have unlimited time", b:"Have unlimited money", level:"C1"},
+    {a:"Save one close friend", b:"Save five strangers", level:"C1"},
+    {a:"Give up chocolate forever", b:"Give up cheese forever", level:"A2"},
+    {a:"Only read e-books", b:"Only read paper books", level:"B1–B2"},
+    {a:"Live on a houseboat", b:"Live in a treehouse", level:"A2"},
+    {a:"Have a rewind button for your life", b:"Have a pause button for your life", level:"B1–B2"},
+    {a:"Be famous for something silly", b:"Be unknown but change one life", level:"B1–B2"},
+    {a:"Only whisper", b:"Only shout", level:"A2"},
+    {a:"No homework ever", b:"No exams ever", level:"A2"},
+    {a:"Travel to the past", b:"Travel to the future", level:"B1–B2"},
+    {a:"Live where it’s always winter", b:"Live where it’s always summer", level:"A2"},
+    {a:"Have a personal robot helper", b:"Have a flying bicycle", level:"A2"},
+    {a:"Only eat breakfast foods", b:"Only eat dinner foods", level:"A2"},
+    {a:"Never use a phone", b:"Never use a computer", level:"B1–B2"},
+    {a:"Swim with dolphins", b:"Hike with pandas (magically safe)", level:"A2"},
+    {a:"Be able to teleport", b:"Be able to read minds", level:"B1–B2"},
+    {a:"Always have perfect grammar", b:"Always have perfect pronunciation", level:"B1–B2"},
+    {a:"Only watch comedies", b:"Only watch documentaries", level:"B1–B2"},
+    {a:"Share your best idea", b:"Keep your best idea secret", level:"B1–B2"},
+    {a:"Live without music", b:"Live without books", level:"B1–B2"},
+    {a:"Be the funniest person in the room", b:"Be the smartest person in the room", level:"B1–B2"},
+    {a:"Speak to your future self for 5 minutes", b:"Speak to a historical figure for 5 minutes", level:"B1–B2"},
+    {a:"Have free public transport forever", b:"Have free meals at school forever", level:"A2"},
+    {a:"Only use renewable energy", b:"Plant one million trees", level:"B1–B2"},
+    {a:"Team project with your best friend", b:"Team project with a top student you don’t know", level:"B1–B2"},
+    {a:"Live by the sea", b:"Live in the mountains", level:"A2"},
+    {a:"Adopt a rescue animal", b:"Invent a new eco-friendly gadget", level:"B1–B2"},
+  ];
+
+  // ===== Starters bank (random 5 each prompt) =====
+  const startersBank = [
+    'I chose <em>Option A/B</em> because…',
+    'In my opinion, …',
+    'On the other hand, …',
+    'A counterargument is …',
+    'To conclude, …',
+    'One reason is …',
+    'A real-life example is …',
+    'I respectfully disagree because …',
+    'I agree with <em>name</em> because …',
+    'Another perspective is …'
+  ];
+
+  // ===== DOM =====
+  const textLeft = document.getElementById('textLeft');
+  const textRight = document.getElementById('textRight');
+  const optLeft = document.getElementById('optLeft');
+  const optRight = document.getElementById('optRight');
+  const idx = document.getElementById('idx');
+  const total = document.getElementById('total');
+  const countdown = document.getElementById('countdown');
+  const startersRow = document.getElementById('startersRow');
+  const levelChip = document.getElementById('levelChip');
+  const levelSelect = document.getElementById('levelSelect');
+  const promptList = document.getElementById('promptList');
+
+  // Header controls
+  const nextBtn = document.getElementById('nextBtn');
+  const timerBtn = document.getElementById('timerBtn');
+  const timerQuick = document.getElementById('timerQuick');
+  const startersBtn = document.getElementById('startersBtn');
+  const debateToggle = document.getElementById('debateToggle');
+
+  // Sidebar timer controls
+  const timerMin = document.getElementById('timerMin');
+  const setTimerBtn = document.getElementById('setTimerBtn');
+  const startTimerBtn = document.getElementById('startTimerBtn');
+  const stopTimerBtn = document.getElementById('stopTimerBtn');
+
+  // Debate UI
+  const debatePanel = document.getElementById('debatePanel');
+  const phaseEl = document.getElementById('phase');
+  const timeAEl = document.getElementById('timeA');
+  const timeBEl = document.getElementById('timeB');
+  const voteChip = document.getElementById('voteChip');
+  const speakSecIn = document.getElementById('speakSec');
+  const rebutSecIn = document.getElementById('rebutSec');
+  const useRebutIn = document.getElementById('useRebut');
+  const debateStartBtn = document.getElementById('debateStart');
+  const debatePauseBtn = document.getElementById('debatePause');
+  const debateNextBtn = document.getElementById('debateNext');
+  const debateResetBtn = document.getElementById('debateReset');
+  const voteABtn = document.getElementById('voteA');
+  const voteBBtn = document.getElementById('voteB');
+  const voteResetBtn = document.getElementById('voteReset');
+
+  // ===== State =====
+  let index = 0;
+  total.textContent = prompts.length;
+
+  // Timer (shared big display)
+  let timer = null;
+  let remaining = 0;
+  let running = false;
+
+  // Debate
+  const debate = {
+    active:false, phase:'idle',
+    speakSec:45, rebutSec:20, useRebut:true,
+    timer:null, remaining:0,
+    votesA:0, votesB:0,
+    tA:0, tB:0
+  };
+
+  // ===== Helpers =====
+  function flash(node){ node.classList.add('flash'); setTimeout(()=>node.classList.remove('flash'), 600); }
+  function flashBoth(){ flash(optLeft); flash(optRight); }
+
+  function pickN(arr, n){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a.slice(0, n);
+  }
+
+  function renderStarters(){
+    startersRow.innerHTML='';
+    pickN(startersBank, 5).forEach(s=>{
+      const chip=document.createElement('span'); chip.className='chip'; chip.innerHTML=s; startersRow.appendChild(chip);
+    });
+  }
+
+  function renderStage(){
+    const p = prompts[index];
+    textLeft.textContent = p.a;
+    textRight.textContent = p.b;
+    idx.textContent = index+1;
+    total.textContent = prompts.length;
+    levelChip.textContent = p.level || '—';
+    renderStarters();
+    flashBoth();
+  }
+
+  function renderList(){
+    promptList.innerHTML='';
+    prompts.forEach((p,i)=>{
+      const d=document.createElement('div');
+      d.className='list-item';
+      d.textContent = `${i+1}. ${p.a} OR ${p.b} — [${p.level}]`;
+      d.onclick = ()=>{ index = i; renderStage(); };
+      promptList.appendChild(d);
+    });
+  }
+
+  // ===== Next prompt =====
+  function next(){ index = (index + 1) % prompts.length; renderStage(); }
+  nextBtn.onclick = next;
+
+  // ===== Level manual override (optional) =====
+  levelSelect.onchange = ()=> levelChip.textContent = levelSelect.value;
+
+  // ===== Starters toggle =====
+  startersBtn.onclick = ()=> startersRow.classList.toggle('hidden');
+
+  // ===== Timer =====
+  function showTime(){
+    if(remaining<=0){ countdown.textContent = '—:—'; return; }
+    const m = Math.floor(remaining/60);
+    const s = (remaining%60).toString().padStart(2,'0');
+    countdown.textContent = `${m}:${s}`;
+  }
+  function startTimerWith(seconds){
+    remaining = Math.max(0, seconds|0);
+    if(!remaining) return;
+    if(timer) clearInterval(timer);
+    running = true;
+    showTime();
+    timer = setInterval(()=>{
+      if(!running) return;
+      remaining--; showTime();
+      if(remaining<=0){ stopTimer(); }
+    },1000);
+  }
+  function startTimer(){
+    const secs = parseInt(timerQuick.value,10) || 60;
+    startTimerWith(secs);
+  }
+  function stopTimer(){ running=false; if(timer){clearInterval(timer); timer=null;} showTime(); }
+  timerBtn.onclick = ()=> running? stopTimer() : startTimer();
+
+  // Advanced timer in sidebar
+  setTimerBtn.onclick = ()=>{
+    const mins = parseFloat(timerMin.value)||0;
+    remaining = Math.max(0, Math.round(mins*60));
+    showTime();
+  };
+  startTimerBtn.onclick = ()=>{ if(!remaining){ setTimerBtn.onclick(); } startTimerWith(remaining||60); };
+  stopTimerBtn.onclick = stopTimer;
+
+  // Click the big timer to set (mm:ss or seconds)
+  countdown.addEventListener('click', ()=>{
+    const v = prompt('Set time (mm:ss or seconds):','01:30');
+    if(v==null) return;
+    let sec=0;
+    if(/^\d+:\d{1,2}$/.test(v)){
+      const [m,s]=v.split(':').map(n=>parseInt(n,10)||0);
+      sec = m*60 + s;
+    } else {
+      sec = parseInt(v,10)||0;
+    }
+    remaining = Math.max(0, sec);
+    showTime();
+  });
+
+  // ===== Debate mode =====
+  function setActive(side){
+    optLeft.classList.toggle('active', side==='A');
+    optRight.classList.toggle('active', side==='B');
+  }
+  function updateVotes(){
+    const total = debate.votesA + debate.votesB;
+    const pa = total ? Math.round(debate.votesA*100/total) : 0;
+    const pb = total ? 100 - pa : 0;
+    voteChip.textContent = `A: ${debate.votesA} • B: ${debate.votesB} (${pa}% / ${pb}%)`;
+  }
+  function showTimeDebate(){
+    const m = Math.floor(debate.remaining/60);
+    const s = (debate.remaining%60).toString().padStart(2,'0');
+    countdown.textContent = `${m}:${s}`;
+    timeAEl.textContent = debate.tA>0 ? `${debate.tA}s` : '—';
+    timeBEl.textContent = debate.tB>0 ? `${debate.tB}s` : '—';
+  }
+  function setPhase(p, sec){
+    debate.phase = p;
+    debate.remaining = sec|0;
+    phaseEl.textContent =
+      p==='A'  ? 'A speaks' :
+      p==='B'  ? 'B speaks' :
+      p==='RA' ? 'Rebuttal A' :
+      p==='RB' ? 'Rebuttal B' : 'Idle/Vote';
+    setActive(p==='A'||p==='RA' ? 'A' : (p==='B'||p==='RB' ? 'B' : null));
+    showTimeDebate();
+  }
+  function debateTick(){
+    if(!debate.active) return;
+    debate.remaining--;
+    if(debate.phase==='A' || debate.phase==='RA'){ if(debate.tA>0) debate.tA--; }
+    if(debate.phase==='B' || debate.phase==='RB'){ if(debate.tB>0) debate.tB--; }
+    showTimeDebate();
+    if(debate.remaining<=0){ nextPhase(); }
+  }
+  function nextPhase(){
+    if(debate.phase==='A'){ setPhase('B', debate.speakSec); return; }
+    if(debate.phase==='B' && debate.useRebut){ setPhase('RA', debate.rebutSec); return; }
+    if(debate.phase==='B' && !debate.useRebut){ setPhase('vote', 0); setActive(null); debatePause(); return; }
+    if(debate.phase==='RA'){ setPhase('RB', debate.rebutSec); return; }
+    if(debate.phase==='RB'){ setPhase('vote', 0); setActive(null); debatePause(); return; }
+    setPhase('idle', 0); setActive(null); debatePause();
+  }
+  function debateStart(){
+    debate.speakSec = parseInt(speakSecIn.value,10)||45;
+    debate.rebutSec = parseInt(rebutSecIn.value,10)||20;
+    debate.useRebut = !!useRebutIn.checked;
+    debate.tA = debate.speakSec + (debate.useRebut?debate.rebutSec:0);
+    debate.tB = debate.speakSec + (debate.useRebut?debate.rebutSec:0);
+    clearInterval(debate.timer);
+    debate.active = true;
+    if(debate.phase==='idle' || debate.phase==='vote'){ setPhase('A', debate.speakSec); }
+    debate.timer = setInterval(debateTick, 1000);
+  }
+  function debatePause(){ debate.active=false; clearInterval(debate.timer); debate.timer=null; }
+  function debateReset(){
+    debatePause(); debate.phase='idle'; debate.remaining=0; debate.tA=0; debate.tB=0;
+    setActive(null); phaseEl.textContent='Idle'; showTime();
+  }
+  function toggleDebate(){
+    const wasHidden = debatePanel.classList.contains('hidden');
+    debatePanel.classList.toggle('hidden');
+    if(!wasHidden){ debateReset(); }
+  }
+
+  debateStartBtn.onclick = debateStart;
+  debatePauseBtn.onclick = debatePause;
+  debateNextBtn.onclick = nextPhase;
+  debateResetBtn.onclick = debateReset;
+  debateToggle.onclick = toggleDebate;
+
+  voteABtn.onclick = ()=>{ debate.votesA++; updateVotes(); };
+  voteBBtn.onclick = ()=>{ debate.votesB++; updateVotes(); };
+  voteResetBtn.onclick = ()=>{ debate.votesA=0; debate.votesB=0; updateVotes(); };
+
+  // ===== Fullscreen =====
+  document.getElementById('fullscreenBtn').onclick = ()=>{
+    if(!document.fullscreenElement){ document.documentElement.requestFullscreen().catch(()=>{}); }
+    else{ document.exitFullscreen(); }
+  };
+
+  // ===== Keyboard =====
+  document.addEventListener('keydown', (e)=>{
+    if(e.key===' '){ e.preventDefault(); next(); }
+    if(e.key.toLowerCase()==='t'){ running ? stopTimer() : startTimer(); }
+    if(e.key.toLowerCase()==='s'){ startersRow.classList.toggle('hidden'); }
+    if(e.key.toLowerCase()==='f'){ if(!document.fullscreenElement){document.documentElement.requestFullscreen();} else {document.exitFullscreen();} }
+    if(e.key.toLowerCase()==='d'){ toggleDebate(); }
+    if(e.key==='1'){ flash(optLeft); }
+    if(e.key==='2'){ flash(optRight); }
+  });
+
+  // ===== Init =====
+  function init(){
+    renderStage();
+    renderList();
+    updateVotes();
+  }
+  init();
+</script>
+</body>
+</html>
