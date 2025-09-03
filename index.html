@@ -6,24 +6,18 @@
 <title>Would You Rather – Classroom</title>
 <style>
   :root{
-    --bg:#f6f7fb;        /* light background */
-    --panel:#ffffff;     /* card/panel */
-    --text:#0f172a;      /* slate-900 */
-    --muted:#475569;     /* slate-600 */
-    --border:rgba(2,6,23,.12);
+    --bg:#f6f7fb; --panel:#ffffff; --text:#0f172a; --muted:#475569; --border:rgba(2,6,23,.12);
     --shadow:0 6px 16px rgba(15,23,42,.08);
-    --leftStart:#fecdd3; --leftEnd:#fda4af;     /* left gradient */
-    --rightStart:#bae6fd; --rightEnd:#7dd3fc;   /* right gradient */
-    --accent:#0ea5e9;
-    --chip:#f1f5f9;
+    --leftStart:#fecdd3; --leftEnd:#fda4af; --rightStart:#bae6fd; --rightEnd:#7dd3fc;
+    --accent:#0ea5e9; --chip:#f1f5f9;
   }
   *{box-sizing:border-box}
-  html,body{height:100%; margin:0}
+  html,body{height:100%;margin:0}
   body{
     font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     background:var(--bg); color:var(--text);
     display:flex; flex-direction:column; gap:8px; padding:10px;
-    overflow:hidden; /* no page scroll */
+    overflow:hidden; /* fit on one screen */
   }
   header{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
   .title{font-weight:800; font-size:18px}
@@ -34,18 +28,11 @@
     padding:7px 10px; border-radius:10px; cursor:pointer; font-weight:650; font-size:13px; box-shadow:var(--shadow)
   }
   button:hover{transform:translateY(-1px)}
-  .btn-primary{background:linear-gradient(180deg, #e0f2fe, #fff); border-color:#bae6fd}
-  .btn-alt{background:linear-gradient(180deg, #ffe4e6, #fff); border-color:#fecdd3}
-  input[type="number"], select{
-    padding:6px 8px; border-radius:8px; border:1px solid var(--border); background:#fff; font-size:13px
-  }
-  .layout{
-    display:grid; grid-template-columns:1fr 320px; gap:10px;
-    height: calc(100vh - 120px); min-height:340px;
-  }
+  input[type="number"], select{padding:6px 8px; border-radius:8px; border:1px solid var(--border); background:#fff; font-size:13px}
+  .layout{display:grid; grid-template-columns:1fr 320px; gap:10px; height:calc(100vh - 120px); min-height:340px}
   .stage{
-    border:1px solid var(--border); border-radius:16px; padding:10px; background:var(--panel);
-    box-shadow:var(--shadow); display:grid; grid-template-rows:auto 1fr auto auto auto; gap:8px; min-width:0; min-height:0;
+    border:1px solid var(--border); border-radius:16px; padding:10px; background:var(--panel); box-shadow:var(--shadow);
+    display:grid; grid-template-rows:auto 1fr auto auto auto; gap:8px; min-width:0; min-height:0;
   }
   .option-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; min-height:0}
   .option{
@@ -65,7 +52,7 @@
   .debatebar{display:flex; justify-content:space-around; gap:8px; font-size:13px; flex-wrap:wrap}
   .sidebar{
     border:1px solid var(--border); border-radius:16px; padding:10px; background:var(--panel); box-shadow:var(--shadow);
-    display:flex; flex-direction:column; gap:8px; min-width:280px; min-height:0; overflow:hidden;
+    display:flex; flex-direction:column; gap:8px; min-width:280px; min-height:0; overflow:auto;
   }
   .sidebar h3{margin:2px 0 0; font-size:13px; color:var(--muted)}
   .list{display:flex; flex-direction:column; gap:6px; height: 34vh; overflow:auto; padding-right:2px; font-size:12px}
@@ -74,29 +61,23 @@
   .row>*{flex:1}
   .footer{font-size:12px; color:var(--muted); text-align:center}
   .hidden{display:none}
-  @media (max-width: 900px){
-    .layout{grid-template-columns:1fr 280px}
-    .option p{font-size: clamp(18px, 3.4vw, 26px)}
-  }
-  @media (max-width: 720px){
-    .layout{grid-template-columns:1fr}
-    .sidebar{height:42vh}
-    .list{height: 22vh}
-  }
+  @media (max-width: 900px){.layout{grid-template-columns:1fr 280px}.option p{font-size: clamp(18px, 3.4vw, 26px)}}
+  @media (max-width: 720px){.layout{grid-template-columns:1fr}.sidebar{height:42vh}.list{height:22vh}}
 </style>
 </head>
 <body>
   <header>
     <div>
-      <div class="title">Would You Rather – Classroom Edition</div>
-      <div class="sub">Shortcuts: <b>Space</b> Next • <b>T</b> Start/Stop Timer • <b>S</b> Starters • <b>D</b> Toggle Debate • <b>F</b> Fullscreen • Click time to set mm:ss</div>
+      <div class="title" id="titleText">Would You Rather – Classroom Edition</div>
+      <div class="sub" id="subtitleText">Press <b>Space</b> Next • <b>T</b> Timer • <b>S</b> Starters • <b>D</b> Debate • <b>F</b> Fullscreen</div>
     </div>
     <div class="controls">
-      <button id="nextBtn" class="btn-primary">Next ▷</button>
+      <button id="langBtn">GR/EN</button>
+      <button id="nextBtn">Next ▷</button>
       <button id="timerBtn">Start Timer ⏱</button>
       <input type="number" id="timerQuick" value="90" min="10" step="10" title="seconds" style="width:76px">s
-      <button id="startersBtn" class="btn-alt">Starters ✍️</button>
-      <button id="debateToggle" class="btn-alt">Debate Mode ⚖️</button>
+      <button id="startersBtn">Starters ✍️</button>
+      <button id="debateToggle">Debate Mode ⚖️</button>
       <button id="fullscreenBtn">Fullscreen ⤢</button>
     </div>
   </header>
@@ -104,87 +85,68 @@
   <div class="layout">
     <section class="stage" aria-live="polite">
       <div class="option-grid">
-        <div class="option left" id="optLeft">
-          <h2>Option A</h2>
-          <p id="textLeft">—</p>
-        </div>
-        <div class="option right" id="optRight">
-          <h2>Option B</h2>
-          <p id="textRight">—</p>
-        </div>
+        <div class="option left"><h2 id="optALabel">Option A</h2><p id="textLeft">—</p></div>
+        <div class="option right"><h2 id="optBLabel">Option B</h2><p id="textRight">—</p></div>
       </div>
 
       <div class="ticker">
-        <span class="chip">Prompt <span id="idx">1</span>/<span id="total">—</span></span>
-        <span class="chip">Level: <b id="levelChip">—</b></span>
+        <span class="chip"><span id="promptLabel">Prompt</span> <span id="idx">1</span>/<span id="total">—</span></span>
+        <span class="chip"><span id="levelLabel">Level</span>: <b id="levelChip">—</b></span>
       </div>
 
-      <div class="ticker">
-        <span class="count" id="countdown">—:—</span>
-      </div>
+      <div class="ticker"><span class="count" id="countdown">—:—</span></div>
 
-      <div id="startersRow" class="hidden">
-        <!-- sentence starters appear here -->
-      </div>
+      <div id="startersRow" class="hidden"></div>
 
       <div class="debatebar hidden" id="debatePanel">
-        <span class="chip">Phase: <b id="phase">Idle</b></span>
-        <span class="chip">A Time: <b id="timeA">—</b></span>
-        <span class="chip">B Time: <b id="timeB">—</b></span>
+        <span class="chip"><span id="phaseLabel">Phase</span>: <b id="phase">Idle</b></span>
+        <span class="chip">A <span id="timeALabel">Time</span>: <b id="timeA">—</b></span>
+        <span class="chip">B <span id="timeBLabel">Time</span>: <b id="timeB">—</b></span>
         <span class="chip" id="voteChip">A: 0 • B: 0 (— / —)</span>
       </div>
     </section>
 
     <aside class="sidebar">
-      <h3>Prompt Bank</h3>
-      <div class="list" id="promptList" aria-label="Prompt list"></div>
+      <h3 id="bankLabel">Prompt Bank</h3>
+      <div class="list" id="promptList"></div>
 
-      <h3>Level</h3>
-      <div class="row">
-        <select id="levelSelect">
-          <option>B1–B2</option>
-          <option>A2</option>
-          <option>C1</option>
-        </select>
-      </div>
+      <h3 id="levelHeader">Level</h3>
+      <div class="row"><select id="levelSelect"><option>B1–B2</option><option>A2</option><option>C1</option></select></div>
 
-      <h3>Timer (advanced)</h3>
+      <h3 id="timerHeader">Timer</h3>
       <div class="row">
         <input id="timerMin" type="number" min="0" step="0.5" value="1.5" title="Minutes" />
         <button id="setTimerBtn">Set</button>
         <button id="startTimerBtn">Start</button>
         <button id="stopTimerBtn">Stop</button>
       </div>
-      <div class="row"><small>Tip: Click the big time above to set (mm:ss or seconds)</small></div>
+      <div class="row"><small id="tipText">Tip: Click the time to set (mm:ss)</small></div>
 
-      <h3>Debate Mode</h3>
+      <h3 id="debateHeader">Debate Mode</h3>
       <div class="row">
         <input id="speakSec" type="number" min="10" step="5" value="45" title="Seconds per side" />
         <input id="rebutSec" type="number" min="10" step="5" value="20" title="Rebuttal seconds" />
       </div>
-      <div class="row">
-        <label style="display:flex;align-items:center;gap:6px"><input id="useRebut" type="checkbox" checked /> Rebuttal round</label>
-      </div>
+      <div class="row"><label style="display:flex;align-items:center;gap:6px"><input id="useRebut" type="checkbox" checked /> <span id="rebutLabel">Rebuttal round</span></label></div>
       <div class="row">
         <button id="debateStart">Start</button>
         <button id="debatePause">Pause</button>
         <button id="debateNext">Next</button>
         <button id="debateReset">Reset</button>
       </div>
-
       <details>
-        <summary><b>How Debate Mode works</b></summary>
-        <ol style="margin:6px 0 0 16px; padding:0; font-size:12px; color:#334155">
-          <li><b>Toggle</b> Debate (button or <b>D</b>) to show the debate bar.</li>
-          <li><b>Set times:</b> choose seconds per side and (optional) rebuttal seconds; uncheck Rebuttal to skip.</li>
-          <li><b>Start:</b> Side A speaks, left panel highlights, big timer counts down. Then B speaks. Click <b>Next</b> to switch early.</li>
-          <li><b>Rebuttals:</b> If enabled, A then B rebut. The bar shows A/B remaining time.</li>
-          <li><b>Vote:</b> Use Vote A/B to tally hands; percentages update live.</li>
-          <li><b>Pause/Reset:</b> Pause stops timing; Reset clears phase and timers.</li>
+        <summary><b id="howDebate">How Debate Mode works</b></summary>
+        <ol id="debateInstructions" style="margin:6px 0 0 16px; padding:0; font-size:12px; color:#334155">
+          <li data-en="Toggle Debate Mode (button or D) to show the debate bar." data-gr="Ενεργοποίησε τη Συζήτηση (κουμπί ή D) για να εμφανιστεί το πάνελ."></li>
+          <li data-en="Set speaking and rebuttal times, then click Start." data-gr="Όρισε χρόνους ομιλίας και αντεπιχειρημάτων και πάτησε Έναρξη."></li>
+          <li data-en="Side A speaks, then Side B. If rebuttal is on, A then B rebut." data-gr="Η Ομάδα Α μιλά, μετά η Ομάδα Β. Αν είναι ενεργό το αντεπιχείρημα, Α και μετά Β απαντούν."></li>
+          <li data-en="Timers count down automatically, or click Next to switch early." data-gr="Τα χρονόμετρα μετρούν αντίστροφα ή πάτησε Επόμενο για αλλαγή νωρίτερα."></li>
+          <li data-en="Use Pause to stop, Reset to clear and return to idle." data-gr="Χρησιμοποίησε Παύση για διακοπή, Επαναφορά για καθαρισμό και επιστροφή."></li>
+          <li data-en="Vote buttons tally class choices after debate." data-gr="Τα κουμπιά Ψήφος καταγράφουν τις επιλογές μετά τη συζήτηση."></li>
         </ol>
       </details>
 
-      <h3>Vote</h3>
+      <h3 id="voteHeader">Vote</h3>
       <div class="row">
         <button id="voteA">Vote A</button>
         <button id="voteB">Vote B</button>
@@ -193,324 +155,215 @@
     </aside>
   </div>
 
-  <div class="footer">✨✍️ Created by Panagiotis Domvros, English and Drama Teacher, Sourced from Education World ✍️✨</div>
+  <div class="footer" id="footerText">✨✍️ Created by Panagiotis Domvros, English and Drama Teacher, Sourced from Education World ✍️✨</div>
 
 <script>
-  // ===== Prompt bank with levels (36) =====
-  const prompts = [
-    {a:"Live in a world with no technology", b:"Live in a world with no nature", level:"B1–B2"},
-    {a:"Speak with animals", b:"Speak all human languages fluently", level:"B1–B2"},
-    {a:"Have your favourite movie character as your best friend", b:"Have your favourite book character as your sibling", level:"B1–B2"},
-    {a:"Never use social media again", b:"Never watch TV or movies again", level:"B1–B2"},
-    {a:"Always be 10 minutes late", b:"Always be 20 minutes early", level:"A2"},
-    {a:"Travel only by train", b:"Travel only by boat", level:"A2"},
-    {a:"Eat only sweet food for a week", b:"Eat only salty food for a week", level:"A2"},
-    {a:"Fly for 10 minutes a day", b:"Be invisible for 10 minutes a day", level:"B1–B2"},
-    {a:"Live in the city center", b:"Live in the countryside", level:"A2"},
-    {a:"Always speak in rhymes", b:"Always sing instead of speak", level:"A2"},
-    {a:"Have unlimited time", b:"Have unlimited money", level:"C1"},
-    {a:"Save one close friend", b:"Save five strangers", level:"C1"},
-    {a:"Give up chocolate forever", b:"Give up cheese forever", level:"A2"},
-    {a:"Only read e-books", b:"Only read paper books", level:"B1–B2"},
-    {a:"Live on a houseboat", b:"Live in a treehouse", level:"A2"},
-    {a:"Have a rewind button for your life", b:"Have a pause button for your life", level:"B1–B2"},
-    {a:"Be famous for something silly", b:"Be unknown but change one life", level:"B1–B2"},
-    {a:"Only whisper", b:"Only shout", level:"A2"},
-    {a:"No homework ever", b:"No exams ever", level:"A2"},
-    {a:"Travel to the past", b:"Travel to the future", level:"B1–B2"},
-    {a:"Live where it’s always winter", b:"Live where it’s always summer", level:"A2"},
-    {a:"Have a personal robot helper", b:"Have a flying bicycle", level:"A2"},
-    {a:"Only eat breakfast foods", b:"Only eat dinner foods", level:"A2"},
-    {a:"Never use a phone", b:"Never use a computer", level:"B1–B2"},
-    {a:"Swim with dolphins", b:"Hike with pandas (magically safe)", level:"A2"},
-    {a:"Be able to teleport", b:"Be able to read minds", level:"B1–B2"},
-    {a:"Always have perfect grammar", b:"Always have perfect pronunciation", level:"B1–B2"},
-    {a:"Only watch comedies", b:"Only watch documentaries", level:"B1–B2"},
-    {a:"Share your best idea", b:"Keep your best idea secret", level:"B1–B2"},
-    {a:"Live without music", b:"Live without books", level:"B1–B2"},
-    {a:"Be the funniest person in the room", b:"Be the smartest person in the room", level:"B1–B2"},
-    {a:"Speak to your future self for 5 minutes", b:"Speak to a historical figure for 5 minutes", level:"B1–B2"},
-    {a:"Have free public transport forever", b:"Have free meals at school forever", level:"A2"},
-    {a:"Only use renewable energy", b:"Plant one million trees", level:"B1–B2"},
-    {a:"Team project with your best friend", b:"Team project with a top student you don’t know", level:"B1–B2"},
-    {a:"Live by the sea", b:"Live in the mountains", level:"A2"},
-    {a:"Adopt a rescue animal", b:"Invent a new eco-friendly gadget", level:"B1–B2"},
+  /* ========================== i18n ========================== */
+  const i18n={
+    en:{title:"Would You Rather – Classroom Edition",subtitle:"Press <b>Space</b> Next • <b>T</b> Timer • <b>S</b> Starters • <b>D</b> Debate • <b>F</b> Fullscreen",optionA:"Option A",optionB:"Option B",prompt:"Prompt",level:"Level",phase:"Phase",time:"Time",bank:"Prompt Bank",levelHeader:"Level",timerHeader:"Timer",tip:"Tip: Click the time to set (mm:ss)",debateHeader:"Debate Mode",rebut:"Rebuttal round",howDebate:"How Debate Mode works",voteHeader:"Vote",footer:"✨✍️ Created by Panagiotis Domvros, English and Drama Teacher, Sourced from Education World ✍️✨"},
+    gr:{title:"Θα προτιμούσες – Έκδοση Τάξης",subtitle:"Πάτησε <b>Space</b> για επόμενο • <b>T</b> Χρονόμετρο • <b>S</b> Φράσεις • <b>D</b> Συζήτηση • <b>F</b> Πλήρης Οθόνη",optionA:"Επιλογή Α",optionB:"Επιλογή Β",prompt:"Ερώτηση",level:"Επίπεδο",phase:"Φάση",time:"Χρόνος",bank:"Τράπεζα Ερωτήσεων",levelHeader:"Επίπεδο",timerHeader:"Χρονόμετρο",tip:"Συμβουλή: Κάνε κλικ στο χρόνο (λεπτά:δευτ)",debateHeader:"Λειτουργία Συζήτησης",rebut:"Γύρος Αντεπιχειρημάτων",howDebate:"Πώς λειτουργεί η Συζήτηση",voteHeader:"Ψήφος",footer:"✨✍️ Σχεδιασμός: Παναγιώτης Δόμβρος, Εκπαιδευτικός Αγγλικής Γλώσσας - Θεατρολόγος, Βασισμένο σε ιδέα από το Education World ✍️✨"}
+  };
+  let lang='en';
+
+  /* ===================== Prompts (EN + GR) =================== */
+  const prompts=[
+    {a:"Live in a world with no technology", b:"Live in a world with no nature", grA:"Να ζεις σε έναν κόσμο χωρίς τεχνολογία", grB:"Να ζεις σε έναν κόσμο χωρίς φύση", level:"B1–B2"},
+    {a:"Speak with animals", b:"Speak all human languages fluently", grA:"Να μιλάς με τα ζώα", grB:"Να μιλάς όλες τις ανθρώπινες γλώσσες άπταιστα", level:"B1–B2"},
+    {a:"Have your favorite movie character as your best friend", b:"Have your favorite book character as your sibling", grA:"Ο αγαπημένος σου κινηματογραφικός χαρακτήρας να είναι ο καλύτερός σου φίλος", grB:"Ο αγαπημένος σου λογοτεχνικός χαρακτήρας να είναι αδελφός/αδελφή σου", level:"B1–B2"},
+    {a:"Never use social media again", b:"Never watch TV or movies again", grA:"Να μην ξαναχρησιμοποιήσεις ποτέ κοινωνικά δίκτυα", grB:"Να μην ξαναδείς ποτέ τηλεόραση ή ταινίες", level:"B1–B2"},
+    {a:"Always be 10 minutes late", b:"Always be 20 minutes early", grA:"Να αργείς πάντα 10 λεπτά", grB:"Να είσαι πάντα 20 λεπτά νωρίτερα", level:"A2"},
+    {a:"Travel only by train", b:"Travel only by boat", grA:"Να ταξιδεύεις μόνο με τρένο", grB:"Να ταξιδεύεις μόνο με πλοίο", level:"A2"},
+    {a:"Eat only sweet food for a week", b:"Eat only salty food for a week", grA:"Να τρως μόνο γλυκά για μία εβδομάδα", grB:"Να τρως μόνο αλμυρά για μία εβδομάδα", level:"A2"},
+    {a:"Fly for 10 minutes a day", b:"Be invisible for 10 minutes a day", grA:"Να πετάς για 10 λεπτά τη μέρα", grB:"Να είσαι αόρατος/η για 10 λεπτά τη μέρα", level:"B1–B2"},
+    {a:"Live in the city center", b:"Live in the countryside", grA:"Να ζεις στο κέντρο της πόλης", grB:"Να ζεις στην ύπαιθρο", level:"A2"},
+    {a:"Always speak in rhymes", b:"Always sing instead of speak", grA:"Να μιλάς πάντα με ρίμες", grB:"Να τραγουδάς αντί να μιλάς", level:"A2"},
+    {a:"Have unlimited time", b:"Have unlimited money", grA:"Να έχεις απεριόριστο χρόνο", grB:"Να έχεις απεριόριστα χρήματα", level:"C1"},
+    {a:"Save one close friend", b:"Save five strangers", grA:"Να σώσεις έναν κοντινό φίλο", grB:"Να σώσεις πέντε αγνώστους", level:"C1"},
+    {a:"Give up chocolate forever", b:"Give up cheese forever", grA:"Να κόψεις τη σοκολάτα για πάντα", grB:"Να κόψεις το τυρί για πάντα", level:"A2"},
+    {a:"Only read e-books", b:"Only read paper books", grA:"Να διαβάζεις μόνο ηλεκτρονικά βιβλία", grB:"Να διαβάζεις μόνο έντυπα βιβλία", level:"B1–B2"},
+    {a:"Live on a houseboat", b:"Live in a treehouse", grA:"Να ζεις σε πλωτό σπίτι", grB:"Να ζεις σε δεντρόσπιτο", level:"A2"},
+    {a:"Have a rewind button for your life", b:"Have a pause button for your life", grA:"Να έχεις κουμπί επαναφοράς στη ζωή σου", grB:"Να έχεις κουμπί παύσης στη ζωή σου", level:"B1–B2"},
+    {a:"Be famous for something silly", b:"Be unknown but change one life", grA:"Να είσαι διάσημος για κάτι αστείο", grB:"Να είσαι άγνωστος αλλά να αλλάξεις μία ζωή", level:"B1–B2"},
+    {a:"Only whisper", b:"Only shout", grA:"Να ψιθυρίζεις μόνο", grB:"Να φωνάζεις μόνο", level:"A2"},
+    {a:"No homework ever", b:"No exams ever", grA:"Ποτέ ξανά εργασίες για το σπίτι", grB:"Ποτέ ξανά εξετάσεις", level:"A2"},
+    {a:"Travel to the past", b:"Travel to the future", grA:"Ταξίδι στο παρελθόν", grB:"Ταξίδι στο μέλλον", level:"B1–B2"},
+    {a:"Live where it’s always winter", b:"Live where it’s always summer", grA:"Να ζεις όπου είναι πάντα χειμώνας", grB:"Να ζεις όπου είναι πάντα καλοκαίρι", level:"A2"},
+    {a:"Have a personal robot helper", b:"Have a flying bicycle", grA:"Να έχεις προσωπικό ρομπότ βοηθό", grB:"Να έχεις ιπτάμενο ποδήλατο", level:"A2"},
+    {a:"Only eat breakfast foods", b:"Only eat dinner foods", grA:"Να τρως μόνο πρωινά", grB:"Να τρως μόνο βραδινά", level:"A2"},
+    {a:"Never use a phone", b:"Never use a computer", grA:"Να μη χρησιμοποιείς ποτέ τηλέφωνο", grB:"Να μη χρησιμοποιείς ποτέ υπολογιστή", level:"B1–B2"},
+    {a:"Swim with dolphins", b:"Hike with pandas (magically safe)", grA:"Κολύμπι με δελφίνια", grB:"Πεζοπορία με πάντα (μαγικά ασφαλές)", level:"A2"},
+    {a:"Be able to teleport", b:"Be able to read minds", grA:"Δυνατότητα τηλεμεταφοράς", grB:"Δυνατότητα να διαβάζεις σκέψεις", level:"B1–B2"},
+    {a:"Always have perfect grammar", b:"Always have perfect pronunciation", grA:"Πάντα τέλεια γραμματική", grB:"Πάντα τέλεια προφορά", level:"B1–B2"},
+    {a:"Only watch comedies", b:"Only watch documentaries", grA:"Να βλέπεις μόνο κωμωδίες", grB:"Να βλέπεις μόνο ντοκιμαντέρ", level:"B1–B2"},
+    {a:"Share your best idea", b:"Keep your best idea secret", grA:"Να μοιραστείς την καλύτερη ιδέα σου", grB:"Να κρατήσεις μυστική την καλύτερη ιδέα σου", level:"B1–B2"},
+    {a:"Live without music", b:"Live without books", grA:"Ζωή χωρίς μουσική", grB:"Ζωή χωρίς βιβλία", level:"B1–B2"},
+    {a:"Be the funniest person in the room", b:"Be the smartest person in the room", grA:"Να είσαι ο πιο αστείος στο δωμάτιο", grB:"Να είσαι ο πιο έξυπνος στο δωμάτιο", level:"B1–B2"},
+    {a:"Speak to your future self for 5 minutes", b:"Speak to a historical figure for 5 minutes", grA:"Να μιλήσεις με τον μελλοντικό σου εαυτό για 5′", grB:"Να μιλήσεις με ένα ιστορικό πρόσωπο για 5′", level:"B1–B2"},
+    {a:"Have free public transport forever", b:"Have free meals at school forever", grA:"Δωρεάν δημόσιες συγκοινωνίες για πάντα", grB:"Δωρεάν γεύματα στο σχολείο για πάντα", level:"A2"},
+    {a:"Only use renewable energy", b:"Plant one million trees", grA:"Να χρησιμοποιείς μόνο ανανεώσιμη ενέργεια", grB:"Να φυτέψεις ένα εκατομμύριο δέντρα", level:"B1–B2"},
+    {a:"Team project with your best friend", b:"Team project with a top student you don’t know", grA:"Ομαδική εργασία με τον καλύτερό σου φίλο", grB:"Ομαδική εργασία με άριστο μαθητή που δεν γνωρίζεις", level:"B1–B2"},
+    {a:"Live by the sea", b:"Live in the mountains", grA:"Να ζεις δίπλα στη θάλασσα", grB:"Να ζεις στα βουνά", level:"A2"},
+    {a:"Adopt a rescue animal", b:"Invent a new eco-friendly gadget", grA:"Να υιοθετήσεις ένα ζώο διάσωσης", grB:"Να εφεύρεις ένα νέο οικολογικό εργαλείο", level:"B1–B2"}
   ];
 
-  // ===== Starters bank (random 5 each prompt) =====
-  const startersBank = [
-    'I chose <em>Option A/B</em> because…',
-    'In my opinion, …',
-    'On the other hand, …',
-    'A counterargument is …',
-    'To conclude, …',
-    'One reason is …',
-    'A real-life example is …',
-    'I respectfully disagree because …',
-    'I agree with <em>name</em> because …',
-    'Another perspective is …'
-  ];
-
-  // ===== DOM =====
-  const textLeft = document.getElementById('textLeft');
-  const textRight = document.getElementById('textRight');
-  const optLeft = document.getElementById('optLeft');
-  const optRight = document.getElementById('optRight');
-  const idx = document.getElementById('idx');
-  const total = document.getElementById('total');
-  const countdown = document.getElementById('countdown');
-  const startersRow = document.getElementById('startersRow');
-  const levelChip = document.getElementById('levelChip');
-  const levelSelect = document.getElementById('levelSelect');
-  const promptList = document.getElementById('promptList');
-
-  // Header controls
-  const nextBtn = document.getElementById('nextBtn');
-  const timerBtn = document.getElementById('timerBtn');
-  const timerQuick = document.getElementById('timerQuick');
-  const startersBtn = document.getElementById('startersBtn');
-  const debateToggle = document.getElementById('debateToggle');
-
-  // Sidebar timer controls
-  const timerMin = document.getElementById('timerMin');
-  const setTimerBtn = document.getElementById('setTimerBtn');
-  const startTimerBtn = document.getElementById('startTimerBtn');
-  const stopTimerBtn = document.getElementById('stopTimerBtn');
-
-  // Debate UI
-  const debatePanel = document.getElementById('debatePanel');
-  const phaseEl = document.getElementById('phase');
-  const timeAEl = document.getElementById('timeA');
-  const timeBEl = document.getElementById('timeB');
-  const voteChip = document.getElementById('voteChip');
-  const speakSecIn = document.getElementById('speakSec');
-  const rebutSecIn = document.getElementById('rebutSec');
-  const useRebutIn = document.getElementById('useRebut');
-  const debateStartBtn = document.getElementById('debateStart');
-  const debatePauseBtn = document.getElementById('debatePause');
-  const debateNextBtn = document.getElementById('debateNext');
-  const debateResetBtn = document.getElementById('debateReset');
-  const voteABtn = document.getElementById('voteA');
-  const voteBBtn = document.getElementById('voteB');
-  const voteResetBtn = document.getElementById('voteReset');
-
-  // ===== State =====
-  let index = 0;
-  total.textContent = prompts.length;
-
-  // Timer (shared big display)
-  let timer = null;
-  let remaining = 0;
-  let running = false;
-
-  // Debate
-  const debate = {
-    active:false, phase:'idle',
-    speakSec:45, rebutSec:20, useRebut:true,
-    timer:null, remaining:0,
-    votesA:0, votesB:0,
-    tA:0, tB:0
+  const startersBank={
+    en:['I chose <em>Option A/B</em> because…','In my opinion, …','On the other hand, …','A counterargument is …','To conclude, …','One reason is …','A real-life example is …','I respectfully disagree because …','I agree with <em>name</em> because …','Another perspective is …'],
+    gr:['Διάλεξα την  <em>Επιλογή Α/Β</em> γιατί…','Κατά τη γνώμη μου, …','Από την άλλη, …','Ένα αντεπιχείρημα είναι …','Συμπερασματικά, …','Ένας λόγος είναι …','Ένα παράδειγμα από την καθημερινότητα είναι …','Διαφωνώ ευγενικά γιατί …','Συμφωνώ με τον/την <em>…</em> γιατί …','Μια άλλη οπτική είναι …']
   };
 
-  // ===== Helpers =====
-  function flash(node){ node.classList.add('flash'); setTimeout(()=>node.classList.remove('flash'), 600); }
-  function flashBoth(){ flash(optLeft); flash(optRight); }
+  /* ====================== Grab DOM ====================== */
+  const titleText=document.getElementById('titleText');
+  const subtitleText=document.getElementById('subtitleText');
+  const optALabel=document.getElementById('optALabel');
+  const optBLabel=document.getElementById('optBLabel');
+  const promptLabel=document.getElementById('promptLabel');
+  const levelLabel=document.getElementById('levelLabel');
+  const phaseLabel=document.getElementById('phaseLabel');
+  const timeALabel=document.getElementById('timeALabel');
+  const timeBLabel=document.getElementById('timeBLabel');
+  const bankLabel=document.getElementById('bankLabel');
+  const levelHeader=document.getElementById('levelHeader');
+  const timerHeader=document.getElementById('timerHeader');
+  const tipText=document.getElementById('tipText');
+  const debateHeader=document.getElementById('debateHeader');
+  const rebutLabel=document.getElementById('rebutLabel');
+  const howDebate=document.getElementById('howDebate');
+  const voteHeader=document.getElementById('voteHeader');
+  const footerText=document.getElementById('footerText');
 
-  function pickN(arr, n){
-    const a = arr.slice();
-    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-    return a.slice(0, n);
+  const langBtn=document.getElementById('langBtn');
+  const nextBtn=document.getElementById('nextBtn');
+  const timerBtn=document.getElementById('timerBtn');
+  const timerQuick=document.getElementById('timerQuick');
+  const startersBtn=document.getElementById('startersBtn');
+  const fullscreenBtn=document.getElementById('fullscreenBtn');
+
+  const textLeft=document.getElementById('textLeft');
+  const textRight=document.getElementById('textRight');
+  const idxEl=document.getElementById('idx');
+  const totalEl=document.getElementById('total');
+  const levelChip=document.getElementById('levelChip');
+  const startersRow=document.getElementById('startersRow');
+  const promptList=document.getElementById('promptList');
+  const countdown=document.getElementById('countdown');
+
+  const timerMin=document.getElementById('timerMin');
+  const setTimerBtn=document.getElementById('setTimerBtn');
+  const startTimerBtn=document.getElementById('startTimerBtn');
+  const stopTimerBtn=document.getElementById('stopTimerBtn');
+
+  const debatePanel=document.getElementById('debatePanel');
+  const speakSecIn=document.getElementById('speakSec');
+  const rebutSecIn=document.getElementById('rebutSec');
+  const useRebutIn=document.getElementById('useRebut');
+  const phaseEl=document.getElementById('phase');
+  const timeAEl=document.getElementById('timeA');
+  const timeBEl=document.getElementById('timeB');
+  const voteABtn=document.getElementById('voteA');
+  const voteBBtn=document.getElementById('voteB');
+  const voteResetBtn=document.getElementById('voteReset');
+  const voteChip=document.getElementById('voteChip');
+  const debateToggle=document.getElementById('debateToggle');
+  const debateStartBtn=document.getElementById('debateStart');
+  const debatePauseBtn=document.getElementById('debatePause');
+  const debateNextBtn=document.getElementById('debateNext');
+  const debateResetBtn=document.getElementById('debateReset');
+
+  /* ====================== State ====================== */
+  let index=0; totalEl.textContent=prompts.length;
+  let timer=null, remaining=0, running=false;
+  const debate={active:false, phase:'idle', speakSec:45, rebutSec:20, useRebut:true, timer:null, remaining:0, votesA:0, votesB:0, tA:0, tB:0};
+
+  /* ====================== i18n apply ====================== */
+  function applyLang(){
+    const t=i18n[lang];
+    titleText.innerHTML=t.title; subtitleText.innerHTML=t.subtitle; optALabel.textContent=t.optionA; optBLabel.textContent=t.optionB;
+    promptLabel.textContent=t.prompt; levelLabel.textContent=t.level; phaseLabel.textContent=t.phase; timeALabel.textContent=t.time; timeBLabel.textContent=t.time;
+    bankLabel.textContent=t.bank; levelHeader.textContent=t.levelHeader; timerHeader.textContent=t.timerHeader; tipText.innerHTML=t.tip; debateHeader.textContent=t.debateHeader; rebutLabel.textContent=t.rebut; howDebate.textContent=t.howDebate; voteHeader.textContent=t.voteHeader; footerText.innerHTML=t.footer;
+    document.querySelectorAll('#debateInstructions li').forEach(li=>{ li.textContent = lang==='en'? li.dataset.en : li.dataset.gr; });
+    renderList(); renderStage();
   }
+  langBtn.onclick=()=>{ lang=(lang==='en'?'gr':'en'); applyLang(); };
 
+  /* ==================== Helpers & render =================== */
+  function pickN(arr,n){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a.slice(0,n); }
   function renderStarters(){
     startersRow.innerHTML='';
-    pickN(startersBank, 5).forEach(s=>{
+    pickN(startersBank[lang],5).forEach(s=>{
       const chip=document.createElement('span'); chip.className='chip'; chip.innerHTML=s; startersRow.appendChild(chip);
     });
   }
-
   function renderStage(){
-    const p = prompts[index];
-    textLeft.textContent = p.a;
-    textRight.textContent = p.b;
-    idx.textContent = index+1;
-    total.textContent = prompts.length;
-    levelChip.textContent = p.level || '—';
+    const p=prompts[index];
+    if(lang==='en'){ textLeft.textContent=p.a; textRight.textContent=p.b; }
+    else { textLeft.textContent=p.grA; textRight.textContent=p.grB; }
+    idxEl.textContent=index+1; totalEl.textContent=prompts.length; levelChip.textContent=p.level||'—';
     renderStarters();
-    flashBoth();
   }
-
   function renderList(){
     promptList.innerHTML='';
     prompts.forEach((p,i)=>{
-      const d=document.createElement('div');
-      d.className='list-item';
-      d.textContent = `${i+1}. ${p.a} OR ${p.b} — [${p.level}]`;
-      d.onclick = ()=>{ index = i; renderStage(); };
-      promptList.appendChild(d);
+      const left= lang==='en'? p.a : p.grA;
+      const right= lang==='en'? p.b : p.grB;
+      const li=document.createElement('div');
+      li.className='list-item';
+      li.textContent = `${i+1}. ${left}${lang==='en'?' OR ':' Ή '}${right} — [${p.level}]`;
+      li.onclick=()=>{ index=i; renderStage(); };
+      promptList.appendChild(li);
     });
   }
 
-  // ===== Next prompt =====
-  function next(){ index = (index + 1) % prompts.length; renderStage(); }
-  nextBtn.onclick = next;
+  /* ===================== Controls ===================== */
+  document.getElementById('levelSelect').onchange = (e)=>{ levelChip.textContent=e.target.value; };
+  document.getElementById('nextBtn').onclick=()=>{ index=(index+1)%prompts.length; renderStage(); };
+  document.getElementById('startersBtn').onclick=()=> startersRow.classList.toggle('hidden');
 
-  // ===== Level manual override (optional) =====
-  levelSelect.onchange = ()=> levelChip.textContent = levelSelect.value;
-
-  // ===== Starters toggle =====
-  startersBtn.onclick = ()=> startersRow.classList.toggle('hidden');
-
-  // ===== Timer =====
-  function showTime(){
-    if(remaining<=0){ countdown.textContent = '—:—'; return; }
-    const m = Math.floor(remaining/60);
-    const s = (remaining%60).toString().padStart(2,'0');
-    countdown.textContent = `${m}:${s}`;
-  }
-  function startTimerWith(seconds){
-    remaining = Math.max(0, seconds|0);
-    if(!remaining) return;
-    if(timer) clearInterval(timer);
-    running = true;
-    showTime();
-    timer = setInterval(()=>{
-      if(!running) return;
-      remaining--; showTime();
-      if(remaining<=0){ stopTimer(); }
-    },1000);
-  }
-  function startTimer(){
-    const secs = parseInt(timerQuick.value,10) || 60;
-    startTimerWith(secs);
-  }
+  // Timer
+  function showTime(){ if(remaining<=0){countdown.textContent='—:—'; return;} const m=Math.floor(remaining/60); const s=(remaining%60).toString().padStart(2,'0'); countdown.textContent=`${m}:${s}`; }
+  function startTimerWith(sec){ remaining=Math.max(0,sec|0); if(!remaining) return; running=true; if(timer) clearInterval(timer); showTime(); timer=setInterval(()=>{ if(!running) return; remaining--; showTime(); if(remaining<=0){ stopTimer(); } },1000); }
+  function startTimer(){ const secs=parseInt(timerQuick.value,10)||60; startTimerWith(secs); }
   function stopTimer(){ running=false; if(timer){clearInterval(timer); timer=null;} showTime(); }
-  timerBtn.onclick = ()=> running? stopTimer() : startTimer();
-
-  // Advanced timer in sidebar
-  setTimerBtn.onclick = ()=>{
-    const mins = parseFloat(timerMin.value)||0;
-    remaining = Math.max(0, Math.round(mins*60));
-    showTime();
-  };
-  startTimerBtn.onclick = ()=>{ if(!remaining){ setTimerBtn.onclick(); } startTimerWith(remaining||60); };
-  stopTimerBtn.onclick = stopTimer;
-
-  // Click the big timer to set (mm:ss or seconds)
+  timerBtn.onclick=()=> running? stopTimer() : startTimer();
+  setTimerBtn.onclick=()=>{ const mins=parseFloat(timerMin.value)||0; remaining=Math.max(0, Math.round(mins*60)); showTime(); };
+  startTimerBtn.onclick=()=>{ if(!remaining){ setTimerBtn.onclick(); } startTimerWith(remaining||60); };
+  stopTimerBtn.onclick=stopTimer;
   countdown.addEventListener('click', ()=>{
-    const v = prompt('Set time (mm:ss or seconds):','01:30');
-    if(v==null) return;
+    const label = (lang==='en')? 'Set time (mm:ss or seconds)' : 'Θέσε χρόνο (λεπτά:δευτ ή δευτερόλεπτα)';
+    const v = prompt(label,'01:30'); if(v==null) return;
     let sec=0;
-    if(/^\d+:\d{1,2}$/.test(v)){
-      const [m,s]=v.split(':').map(n=>parseInt(n,10)||0);
-      sec = m*60 + s;
-    } else {
-      sec = parseInt(v,10)||0;
-    }
-    remaining = Math.max(0, sec);
-    showTime();
+    if(/^\d+:\d{1,2}$/.test(v)){ const [m,s]=v.split(':').map(n=>parseInt(n,10)||0); sec=m*60+s; }
+    else { sec=parseInt(v,10)||0; }
+    remaining=Math.max(0,sec); showTime();
   });
 
-  // ===== Debate mode =====
-  function setActive(side){
-    optLeft.classList.toggle('active', side==='A');
-    optRight.classList.toggle('active', side==='B');
-  }
-  function updateVotes(){
-    const total = debate.votesA + debate.votesB;
-    const pa = total ? Math.round(debate.votesA*100/total) : 0;
-    const pb = total ? 100 - pa : 0;
-    voteChip.textContent = `A: ${debate.votesA} • B: ${debate.votesB} (${pa}% / ${pb}%)`;
-  }
-  function showTimeDebate(){
-    const m = Math.floor(debate.remaining/60);
-    const s = (debate.remaining%60).toString().padStart(2,'0');
-    countdown.textContent = `${m}:${s}`;
-    timeAEl.textContent = debate.tA>0 ? `${debate.tA}s` : '—';
-    timeBEl.textContent = debate.tB>0 ? `${debate.tB}s` : '—';
-  }
-  function setPhase(p, sec){
-    debate.phase = p;
-    debate.remaining = sec|0;
-    phaseEl.textContent =
-      p==='A'  ? 'A speaks' :
-      p==='B'  ? 'B speaks' :
-      p==='RA' ? 'Rebuttal A' :
-      p==='RB' ? 'Rebuttal B' : 'Idle/Vote';
-    setActive(p==='A'||p==='RA' ? 'A' : (p==='B'||p==='RB' ? 'B' : null));
-    showTimeDebate();
-  }
-  function debateTick(){
-    if(!debate.active) return;
-    debate.remaining--;
-    if(debate.phase==='A' || debate.phase==='RA'){ if(debate.tA>0) debate.tA--; }
-    if(debate.phase==='B' || debate.phase==='RB'){ if(debate.tB>0) debate.tB--; }
-    showTimeDebate();
-    if(debate.remaining<=0){ nextPhase(); }
-  }
-  function nextPhase(){
-    if(debate.phase==='A'){ setPhase('B', debate.speakSec); return; }
-    if(debate.phase==='B' && debate.useRebut){ setPhase('RA', debate.rebutSec); return; }
-    if(debate.phase==='B' && !debate.useRebut){ setPhase('vote', 0); setActive(null); debatePause(); return; }
-    if(debate.phase==='RA'){ setPhase('RB', debate.rebutSec); return; }
-    if(debate.phase==='RB'){ setPhase('vote', 0); setActive(null); debatePause(); return; }
-    setPhase('idle', 0); setActive(null); debatePause();
-  }
-  function debateStart(){
-    debate.speakSec = parseInt(speakSecIn.value,10)||45;
-    debate.rebutSec = parseInt(rebutSecIn.value,10)||20;
-    debate.useRebut = !!useRebutIn.checked;
-    debate.tA = debate.speakSec + (debate.useRebut?debate.rebutSec:0);
-    debate.tB = debate.speakSec + (debate.useRebut?debate.rebutSec:0);
-    clearInterval(debate.timer);
-    debate.active = true;
-    if(debate.phase==='idle' || debate.phase==='vote'){ setPhase('A', debate.speakSec); }
-    debate.timer = setInterval(debateTick, 1000);
-  }
+  // Debate
+  function setActive(side){ document.querySelector('.left').classList.toggle('active', side==='A'); document.querySelector('.right').classList.toggle('active', side==='B'); }
+  function updateVotes(){ const total=debate.votesA+debate.votesB; const pa= total? Math.round(debate.votesA*100/total):0; const pb= total? 100-pa:0; voteChip.textContent=`A: ${debate.votesA} • B: ${debate.votesB} (${pa}% / ${pb}%)`; }
+  function showTimeDebate(){ const m=Math.floor(debate.remaining/60); const s=(debate.remaining%60).toString().padStart(2,'0'); countdown.textContent=`${m}:${s}`; timeAEl.textContent=debate.tA>0?`${debate.tA}s`:'—'; timeBEl.textContent=debate.tB>0?`${debate.tB}s`:'—'; }
+  function setPhase(p,sec){ debate.phase=p; debate.remaining=sec|0; phaseEl.textContent=(p==='A'?'A speaks': p==='B'?'B speaks': p==='RA'?'Rebuttal A': p==='RB'?'Rebuttal B': 'Idle/Vote'); setActive(p==='A'||p==='RA'?'A': p==='B'||p==='RB'?'B': null); showTimeDebate(); }
+  function debateTick(){ if(!debate.active) return; debate.remaining--; if(debate.phase==='A'||debate.phase==='RA'){ if(debate.tA>0) debate.tA--; } if(debate.phase==='B'||debate.phase==='RB'){ if(debate.tB>0) debate.tB--; } showTimeDebate(); if(debate.remaining<=0){ nextPhase(); } }
+  function nextPhase(){ if(debate.phase==='A'){ setPhase('B', debate.speakSec); return; } if(debate.phase==='B' && debate.useRebut){ setPhase('RA', debate.rebutSec); return; } if(debate.phase==='B' && !debate.useRebut){ setPhase('vote',0); setActive(null); debatePause(); return; } if(debate.phase==='RA'){ setPhase('RB', debate.rebutSec); return; } if(debate.phase==='RB'){ setPhase('vote',0); setActive(null); debatePause(); return; } setPhase('idle',0); setActive(null); debatePause(); }
+  function debateStart(){ debate.speakSec=parseInt(speakSecIn.value,10)||45; debate.rebutSec=parseInt(rebutSecIn.value,10)||20; debate.useRebut=!!useRebutIn.checked; debate.tA=debate.speakSec+(debate.useRebut?debate.rebutSec:0); debate.tB=debate.speakSec+(debate.useRebut?debate.rebutSec:0); clearInterval(debate.timer); debate.active=true; if(debate.phase==='idle'||debate.phase==='vote'){ setPhase('A', debate.speakSec); } debate.timer=setInterval(debateTick,1000); }
   function debatePause(){ debate.active=false; clearInterval(debate.timer); debate.timer=null; }
-  function debateReset(){
-    debatePause(); debate.phase='idle'; debate.remaining=0; debate.tA=0; debate.tB=0;
-    setActive(null); phaseEl.textContent='Idle'; showTime();
-  }
-  function toggleDebate(){
-    const wasHidden = debatePanel.classList.contains('hidden');
-    debatePanel.classList.toggle('hidden');
-    if(!wasHidden){ debateReset(); }
-  }
+  function debateReset(){ debatePause(); debate.phase='idle'; debate.remaining=0; debate.tA=0; debate.tB=0; setActive(null); phaseEl.textContent='Idle'; showTime(); }
+  function toggleDebate(){ const wasHidden=debatePanel.classList.contains('hidden'); debatePanel.classList.toggle('hidden'); if(!wasHidden){ debateReset(); } }
+  debateStartBtn.onclick=debateStart; debatePauseBtn.onclick=debatePause; debateNextBtn.onclick=nextPhase; debateResetBtn.onclick=debateReset; debateToggle.onclick=toggleDebate;
+  voteABtn.onclick=()=>{ debate.votesA++; updateVotes(); };
+  voteBBtn.onclick=()=>{ debate.votesB++; updateVotes(); };
+  voteResetBtn.onclick=()=>{ debate.votesA=0; debate.votesB=0; updateVotes(); };
 
-  debateStartBtn.onclick = debateStart;
-  debatePauseBtn.onclick = debatePause;
-  debateNextBtn.onclick = nextPhase;
-  debateResetBtn.onclick = debateReset;
-  debateToggle.onclick = toggleDebate;
-
-  voteABtn.onclick = ()=>{ debate.votesA++; updateVotes(); };
-  voteBBtn.onclick = ()=>{ debate.votesB++; updateVotes(); };
-  voteResetBtn.onclick = ()=>{ debate.votesA=0; debate.votesB=0; updateVotes(); };
-
-  // ===== Fullscreen =====
-  document.getElementById('fullscreenBtn').onclick = ()=>{
-    if(!document.fullscreenElement){ document.documentElement.requestFullscreen().catch(()=>{}); }
-    else{ document.exitFullscreen(); }
-  };
-
-  // ===== Keyboard =====
-  document.addEventListener('keydown', (e)=>{
-    if(e.key===' '){ e.preventDefault(); next(); }
-    if(e.key.toLowerCase()==='t'){ running ? stopTimer() : startTimer(); }
+  // Fullscreen + keys
+  fullscreenBtn.onclick=()=>{ if(!document.fullscreenElement){ document.documentElement.requestFullscreen().catch(()=>{}); } else { document.exitFullscreen(); } };
+  document.addEventListener('keydown', e=>{
+    if(e.key===' '){ e.preventDefault(); index=(index+1)%prompts.length; renderStage(); }
+    if(e.key.toLowerCase()==='t'){ running?stopTimer():startTimer(); }
     if(e.key.toLowerCase()==='s'){ startersRow.classList.toggle('hidden'); }
     if(e.key.toLowerCase()==='f'){ if(!document.fullscreenElement){document.documentElement.requestFullscreen();} else {document.exitFullscreen();} }
     if(e.key.toLowerCase()==='d'){ toggleDebate(); }
-    if(e.key==='1'){ flash(optLeft); }
-    if(e.key==='2'){ flash(optRight); }
   });
 
-  // ===== Init =====
-  function init(){
-    renderStage();
-    renderList();
-    updateVotes();
-  }
+  /* ===================== Init ===================== */
+  function init(){ applyLang(); totalEl.textContent=prompts.length; renderStage(); }
   init();
 </script>
 </body>
